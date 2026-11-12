@@ -114,7 +114,7 @@ inject_custom_css()
 st.markdown("""
 <div class="live-indicator">
     <div class="pulse-dot"></div>
-    SYSTEM ONLINE - ACTIVE MONITORING
+    DEMO MODE - SIMULATED DATA
 </div>
 """, unsafe_allow_html=True)
 
@@ -125,6 +125,7 @@ st.markdown("Monitor real-time forklift productivity, shift performance, and man
 @st.cache_data
 def load_advanced_data():
     """Generates 4-month data with behavioral logic, shifts, and team rotations."""
+    random.seed(42)  # deterministic demo data: same numbers on every restart
     workers_full = ["Ahmad", "Chong", "Hafiz", "Muthu", "Raju", "Siti", "Amin", 
                     "Devi", "Kamal", "Wei Ting", "Faizal", "Sarah", "Kumar", "Zaki"]
     
@@ -269,7 +270,7 @@ with st.sidebar.form("new_staff_form", clear_on_submit=True):
     
     if submitted:
         if new_name.strip():
-            st.sidebar.success(f"Successfully registered {new_name} to {new_dept}!")
+            st.sidebar.info(f"Demo only: {new_name} ({new_dept}) is not saved. Connect a database to persist staff.")
         else:
             st.sidebar.error("Please enter a valid name.")
 
@@ -470,10 +471,18 @@ with tab2:
 
 st.markdown("---")
 st.markdown("### 📋 Database Export")
-csv = df.to_csv(index=False).encode('utf-8')
-st.download_button(
-    label="⬇️ Download Full Master Dataset (CSV)",
-    data=csv,
-    file_name='master_roster_operations_report.csv',
-    mime='text/csv'
-)
+col_exp1, col_exp2 = st.columns(2)
+with col_exp1:
+    st.download_button(
+        label=f"⬇️ Download Filtered View ({len(filtered_df):,} rows)",
+        data=filtered_df.to_csv(index=False).encode('utf-8'),
+        file_name='filtered_operations_report.csv',
+        mime='text/csv'
+    )
+with col_exp2:
+    st.download_button(
+        label="⬇️ Download Full Master Dataset (CSV)",
+        data=df.to_csv(index=False).encode('utf-8'),
+        file_name='master_roster_operations_report.csv',
+        mime='text/csv'
+    )
